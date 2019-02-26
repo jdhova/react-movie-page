@@ -11,7 +11,7 @@ class Pagination extends Component {
                 const itemCount = this.props.itemCount;
                 const pageSize = this.props.pageSize;
                 const currentPage = this.props.currentPage;
-                console.log(currentPage)
+                
 
                 const pageCount = Math.ceil(itemCount/pageSize);
                 if (pageCount === 1) return null 
