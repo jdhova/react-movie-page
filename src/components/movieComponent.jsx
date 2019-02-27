@@ -7,6 +7,7 @@ import Pagination from "../common/pagination";
 import {paginate} from "../utils/paginate"
 import List from "../common/list";
 import {getGenres} from "../services/fakeGenreService";
+import _ from 'lodash';
 
 
 
@@ -16,14 +17,12 @@ class Movie extends Component {
          pageSize : 4,
          currentPage : 1,
          genres : [],
-         action: [],
-         comedy : [],
-         thriller: [],
+         sortColumn : {path : 'title', order : 'asc'}
     };
 
     componentDidMount() {
 
-        const genres = [ { _id: "", name:"All Genres" }, ...getGenres()];
+        const genres = [ { _id: '', name:"All Genres" }, ...getGenres()];
 
         // this.setState({movies:getMovies(), genres: getGenres() });
         this.setState ( {movies : getMovies(), genres});
@@ -51,13 +50,19 @@ class Movie extends Component {
         this.setState({selectedGenre: genre, currentPage: 1});
     }
 
-    handleSort = path => {
-        console.log(path)
-    }
+    handleSort = sortColumn => {
+        
+        this.setState ({sortColumn})
+    };
 
     render() { 
 
-        const {pageSize, currentPage,selectedGenre, movies: allMovies} = this.state;
+        const {pageSize, 
+                currentPage,
+                selectedGenre, 
+                sortColumn,
+                movies: allMovies
+            } = this.state;
 
         if (this.state.movies.length === 0) 
         return <p>Movie Database is Empty</p>
@@ -66,7 +71,9 @@ class Movie extends Component {
         ? allMovies.filter(m => m.genre._id === selectedGenre._id) 
         :allMovies
 
-        const movies = paginate(filtered,currentPage,pageSize)
+       const sorted = _.orderBy(filtered ,[sortColumn.path], [sortColumn.order]);
+
+        const movies = paginate(sorted,currentPage,pageSize)
 
         return (
             <div className ="row">
@@ -87,6 +94,7 @@ class Movie extends Component {
                             onLike = {this.handleLike}
                             onDelete = {this.handleDelete}
                             onSort = {this.handleSort}
+                            sortColumn = {sortColumn}
                             />
                     
                      <Pagination
